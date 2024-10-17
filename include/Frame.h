@@ -76,7 +76,7 @@ public:
   private:
     // This method is only called from ctor
     // Extract ORB on the image. flag = 0 for left image and 1 for right image.
-    void ExtractORB(int flag, const cv::Mat &im, const cv::Mat& mask const int x0, const int x1);
+    void ExtractORB(int flag, const cv::Mat &im, const cv::Mat& mask, const int x0, const int x1);
 
   public:
     // Compute Bag of Words representation.
