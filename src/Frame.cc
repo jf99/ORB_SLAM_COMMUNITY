@@ -98,10 +98,13 @@ Frame::Frame(const Frame &frame)
 }
 
 
-Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeStamp, ORBextractor* extractorLeft, ORBextractor* extractorRight, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth, GeometricCamera* pCamera, Frame* pPrevF, const IMU::Calib &ImuCalib)
-    :mpcpi(NULL), mpORBvocabulary(voc),mpORBextractorLeft(extractorLeft),mpORBextractorRight(extractorRight), mTimeStamp(timeStamp), mK(K.clone()), mK_(Converter::toMatrix3f(K)), mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
+Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const cv::Mat& maskLeft, const cv::Mat& maskRight,
+             const double &timeStamp, ORBextractor* extractorLeft, ORBextractor* extractorRight,
+             ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth,
+             GeometricCamera* pCamera, Frame* pPrevF, const IMU::Calib &ImuCalib)
+    :mpcpi(NULL), mpORBvocabulary(voc), mpORBextractorLeft(extractorLeft), mpORBextractorRight(extractorRight), mTimeStamp(timeStamp), mK(K.clone()), mK_(Converter::toMatrix3f(K)), mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
      mImuCalib(ImuCalib), mpImuPreintegrated(NULL), mpPrevFrame(pPrevF),mpImuPreintegratedFrame(NULL), mpReferenceKF(static_cast<KeyFrame*>(NULL)), mbIsSet(false), mbImuPreintegrated(false),
-     mpCamera(pCamera) ,mpCamera2(nullptr), mbHasPose(false), mbHasVelocity(false)
+     mpCamera(pCamera), mpCamera2(nullptr), mbHasPose(false), mbHasVelocity(false)
 {
     // Frame ID
     mnId=nNextId++;
@@ -119,8 +122,8 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
-    thread threadLeft(&Frame::ExtractORB,this,0,imLeft,0,0);
-    thread threadRight(&Frame::ExtractORB,this,1,imRight,0,0);
+    thread threadLeft(&Frame::ExtractORB, this, 0, imLeft, maskLeft, 0, 0);
+    thread threadRight(&Frame::ExtractORB, this, 1, imRight, maskRight, 0, 0);
     threadLeft.join();
     threadRight.join();
 #ifdef REGISTER_TIMES
@@ -219,7 +222,7 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
-    ExtractORB(0,imGray,0,0);
+    ExtractORB(0, imGray, cv::Mat(), 0, 0);
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_EndExtORB = std::chrono::steady_clock::now();
 
@@ -308,7 +311,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
-    ExtractORB(0,imGray,0,1000);
+    ExtractORB(0, imGray, cv::Mat(), 0, 1000);
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_EndExtORB = std::chrono::steady_clock::now();
 
@@ -415,13 +418,13 @@ void Frame::AssignFeaturesToGrid()
     }
 }
 
-void Frame::ExtractORB(int flag, const cv::Mat &im, const int x0, const int x1)
+void Frame::ExtractORB(int flag, const cv::Mat &im, cv::Mat& mask, const int x0, const int x1)
 {
     vector<int> vLapping = {x0,x1};
     if(flag==0)
-        monoLeft = (*mpORBextractorLeft)(im,cv::Mat(),mvKeys,mDescriptors,vLapping);
+        monoLeft = (*mpORBextractorLeft)(im, mask, mvKeys, mDescriptors, vLapping);
     else
-        monoRight = (*mpORBextractorRight)(im,cv::Mat(),mvKeysRight,mDescriptorsRight,vLapping);
+        monoRight = (*mpORBextractorRight)(im, mask, mvKeysRight, mDescriptorsRight, vLapping);
 }
 
 bool Frame::isSet() const {

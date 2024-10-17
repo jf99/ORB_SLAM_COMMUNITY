@@ -786,7 +786,7 @@ namespace ORB_SLAM3
         return vResultKeys;
     }
 
-    void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoints)
+    void ORBextractor::ComputeKeyPointsOctTree(vector<vector<KeyPoint> >& allKeypoints, const Mat& maskDist)
     {
         allKeypoints.resize(nlevels);
 
@@ -886,16 +886,29 @@ namespace ORB_SLAM3
                                           minBorderY, maxBorderY,mnFeaturesPerLevel[level], level);
 
             const int scaledPatchSize = PATCH_SIZE*mvScaleFactor[level];
+            const float scaledRadiusSize = 0.5f * scaledPatchSize;
 
             // Add border to coordinates and scale information
-            const int nkps = keypoints.size();
-            for(int i=0; i<nkps ; i++)
+            std::vector<bool> canStay(keypoints.size());
+            size_t numKpsThatCanStay = 0;
+            for(size_t i=0; i<keypoints.size(); i++)
             {
                 keypoints[i].pt.x+=minBorderX;
                 keypoints[i].pt.y+=minBorderY;
                 keypoints[i].octave=level;
                 keypoints[i].size = scaledPatchSize;
+                canStay[i] = maskDist.at<float>(keypoints[i].pt) >= scaledRadiusSize;
+                numKpsThatCanStay += canStay[i];
             }
+            if(numKpsThatCanStay == keypoints.size())
+                continue;
+            std::vector<KeyPoint> remainingKps;
+            remainingKps.reserve(numKpsThatCanStay);
+            for(size_t i = 0; i < keypoints.size(); ++i) {
+                if(canStay[i])
+                    remainingKps.emplace_back(keypoints[i]);
+            }
+            keypoints = remainingKps;
         }
 
         // compute orientations
@@ -1097,15 +1110,18 @@ namespace ORB_SLAM3
         //cout << "[ORBextractor]: Max Features: " << nfeatures << endl;
         if(_image.empty())
             return -1;
-
         Mat image = _image.getMat();
         assert(image.type() == CV_8UC1 );
+
+        Mat maskDist, mask = _mask.empty()? cv::Mat(image.size(), CV_8UC1, cv::Scalar(255)): _mask.getMat();
+        assert(mask.type() == CV_8UC1);
+        cv::distanceTransform(mask, maskDist, cv::DIST_C, 3, CV_32F);
 
         // Pre-compute the scale pyramid
         ComputePyramid(image);
 
         vector < vector<KeyPoint> > allKeypoints;
-        ComputeKeyPointsOctTree(allKeypoints);
+        ComputeKeyPointsOctTree(allKeypoints, maskDist);
         //ComputeKeyPointsOld(allKeypoints);
 
         Mat descriptors;
