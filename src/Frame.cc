@@ -418,7 +418,7 @@ void Frame::AssignFeaturesToGrid()
     }
 }
 
-void Frame::ExtractORB(int flag, const cv::Mat &im, cv::Mat& mask, const int x0, const int x1)
+void Frame::ExtractORB(int flag, const cv::Mat &im, const cv::Mat& mask, const int x0, const int x1)
 {
     vector<int> vLapping = {x0,x1};
     if(flag==0)
