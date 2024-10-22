@@ -294,7 +294,7 @@ int main(int argc, char **argv) {
         std::chrono::steady_clock::time_point t_Start_Track = std::chrono::steady_clock::now();
 #endif
         // Stereo images are already rectified.
-        SLAM.TrackStereo(im, imRight, timestamp);
+        SLAM.TrackStereo(im, imRight, cv::Mat(), cv::Mat(), timestamp);
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point t_End_Track = std::chrono::steady_clock::now();
 

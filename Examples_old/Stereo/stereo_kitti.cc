@@ -98,7 +98,7 @@ int main(int argc, char **argv)
         std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 
         // Pass the images to the SLAM system
-        SLAM.TrackStereo(imLeft,imRight,tframe);
+        SLAM.TrackStereo(imLeft, imRight, cv::Mat(), cv::Mat(), tframe);
 
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
 
