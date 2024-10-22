@@ -244,7 +244,7 @@ protected:
     std::mutex mMutexImuQueue;
 
     // Imu calibration parameters
-    IMU::Calib *mpImuCalib;
+    IMU::Calib *mpImuCalib = nullptr;
 
     // Last Bias Estimation (at keyframe creation)
     IMU::Bias mLastBias;
@@ -253,58 +253,58 @@ protected:
     // points in the map. Still tracking will continue if there are enough matches with temporal points.
     // In that case we are doing visual odometry. The system will try to do relocalization to recover
     // "zero-drift" localization to the map.
-    bool mbVO;
+    bool mbVO = false;
 
     //Other Thread Pointers
-    LocalMapping* mpLocalMapper;
-    LoopClosing* mpLoopClosing;
+    LocalMapping* mpLocalMapper = nullptr;
+    LoopClosing* mpLoopClosing = nullptr;
 
     //ORB
-    ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
-    ORBextractor* mpIniORBextractor;
+    ORBextractor* mpORBextractorLeft = nullptr, *mpORBextractorRight = nullptr;
+    ORBextractor* mpIniORBextractor = nullptr;
 
     //BoW
     ORBVocabulary* mpORBVocabulary;
     KeyFrameDatabase* mpKeyFrameDB;
 
     // Initalization (only for monocular)
-    bool mbReadyToInitializate;
-    bool mbSetInit;
+    bool mbReadyToInitializate = false;
+    bool mbSetInit = false;
 
     //Local Map
-    KeyFrame* mpReferenceKF;
+    KeyFrame* mpReferenceKF = nullptr;
     std::vector<KeyFrame*> mvpLocalKeyFrames;
     std::vector<MapPoint*> mvpLocalMapPoints;
     
     // System
-    System* mpSystem;
+    System* mpSystem = nullptr;
     
     //Drawers
-    Viewer* mpViewer;
-    FrameDrawer* mpFrameDrawer;
-    MapDrawer* mpMapDrawer;
-    bool bStepByStep;
+    Viewer* mpViewer = nullptr;
+    FrameDrawer* mpFrameDrawer = nullptr;
+    MapDrawer* mpMapDrawer = nullptr;
+    bool bStepByStep = false;
 
     //Atlas
-    Atlas* mpAtlas;
+    Atlas* mpAtlas = nullptr;
 
     //Calibration matrix
     cv::Mat mK;
     Eigen::Matrix3f mK_;
     cv::Mat mDistCoef;
-    float mbf;
-    float mImageScale;
+    float mbf = 1.f;
+    float mImageScale = 1.f;
 
-    float mImuFreq;
-    double mImuPer;
-    bool mInsertKFsLost;
+    float mImuFreq = 1.f;
+    double mImuPer = 0.f;
+    bool mInsertKFsLost = false;
 
     //New KeyFrame rules (according to fps)
-    int mMinFrames;
-    int mMaxFrames;
+    int mMinFrames = 0;
+    int mMaxFrames = 0;
 
-    int mnFirstImuFrameId;
-    int mnFramesToResetIMU;
+    int mnFirstImuFrameId = 0;
+    int mnFramesToResetIMU = 0;
 
     // Threshold close/far points
     // Points seen as close by the stereo/RGBD sensor are considered reliable
@@ -312,48 +312,48 @@ protected:
     float mThDepth;
 
     // For RGB-D inputs only. For some datasets (e.g. TUM) the depthmap values are scaled.
-    float mDepthMapFactor;
+    float mDepthMapFactor = 0.f;
 
     //Current matches in frame
-    int mnMatchesInliers;
+    int mnMatchesInliers = 0;
 
     //Last Frame, KeyFrame and Relocalisation Info
-    KeyFrame* mpLastKeyFrame;
-    unsigned int mnLastKeyFrameId;
-    unsigned int mnLastRelocFrameId;
-    double mTimeStampLost;
-    double time_recently_lost;
+    KeyFrame* mpLastKeyFrame = nullptr;
+    unsigned int mnLastKeyFrameId = 0;
+    unsigned int mnLastRelocFrameId = 0;
+    double mTimeStampLost = 0.0;
+    double time_recently_lost = 0.0;
 
-    unsigned int mnFirstFrameId;
-    unsigned int mnInitialFrameId;
-    unsigned int mnLastInitFrameId;
+    unsigned int mnFirstFrameId = 0;
+    unsigned int mnInitialFrameId = 0;
+    unsigned int mnLastInitFrameId = 0;
 
-    bool mbCreatedMap;
+    bool mbCreatedMap = false;
 
     //Motion Model
-    bool mbVelocity{false};
+    bool mbVelocity = false;
     Sophus::SE3f mVelocity;
 
     //Color order (true RGB, false BGR, ignored if grayscale)
-    bool mbRGB;
+    bool mbRGB = false;
 
     list<MapPoint*> mlpTemporalPoints;
 
     //int nMapChangeIndex;
 
-    int mnNumDataset;
+    int mnNumDataset = 0;
 
     ofstream f_track_stats;
 
     ofstream f_track_times;
-    double mTime_PreIntIMU;
-    double mTime_PosePred;
-    double mTime_LocalMapTrack;
-    double mTime_NewKF_Dec;
+    double mTime_PreIntIMU = 0.0;
+    double mTime_PosePred = 0.0;
+    double mTime_LocalMapTrack = 0.0;
+    double mTime_NewKF_Dec = 0.0;
 
-    GeometricCamera* mpCamera, *mpCamera2;
+    GeometricCamera* mpCamera = nullptr, *mpCamera2 = nullptr;
 
-    int initID, lastID;
+    int initID = 0, lastID = 0;
 
     Sophus::SE3f mTlr;
 
