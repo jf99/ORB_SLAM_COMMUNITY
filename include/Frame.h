@@ -219,12 +219,12 @@ public:
     // Calibration matrix and OpenCV distortion parameters.
     cv::Mat mK;
     Eigen::Matrix3f mK_;
-    static float fx = 1.f;
-    static float fy = 1.f;
-    static float cx = 0.f;
-    static float cy = 0.f;
-    static float invfx = 1.f;
-    static float invfy = 1.f;
+    static float fx;
+    static float fy;
+    static float cx;
+    static float cy;
+    static float invfx;
+    static float invfy;
     cv::Mat mDistCoef;
 
     // Stereo baseline multiplied by fx.
