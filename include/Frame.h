@@ -140,8 +140,6 @@ public:
     // Backprojects a keypoint (if stereo/depth info available) into 3D world coordinates.
     bool UnprojectStereo(const int &i, Eigen::Vector3f &x3D);
 
-    ConstraintPoseImu* mpcpi;
-
     bool imuIsPreintegrated();
     void setIntegrated();
 
@@ -182,6 +180,7 @@ public:
     }
 
 
+    ConstraintPoseImu* mpcpi = nullptr;
 
 private:
     //Sophus/Eigen migration
@@ -190,7 +189,7 @@ private:
     Eigen::Matrix<float,3,1> mOw;
     Eigen::Matrix<float,3,3> mRcw;
     Eigen::Matrix<float,3,1> mtcw;
-    bool mbHasPose;
+    bool mbHasPose = false;
 
     //Rcw_ not necessary as Sophus has a method for extracting the rotation matrix: Tcw_.rotationMatrix()
     //tcw_ not necessary as Sophus has a method for extracting the translation vector: Tcw_.translation()
@@ -203,43 +202,43 @@ private:
 
     // IMU linear velocity
     Eigen::Vector3f mVw;
-    bool mbHasVelocity;
+    bool mbHasVelocity = false;
 
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     // Vocabulary used for relocalization.
-    ORBVocabulary* mpORBvocabulary;
+    ORBVocabulary* mpORBvocabulary = nullptr;
 
     // Feature extractor. The right is used only in the stereo case.
-    ORBextractor* mpORBextractorLeft, *mpORBextractorRight;
+    ORBextractor* mpORBextractorLeft = nullptr, *mpORBextractorRight = nullptr;
 
     // Frame timestamp.
-    double mTimeStamp;
+    double mTimeStamp = 0.0;
 
     // Calibration matrix and OpenCV distortion parameters.
     cv::Mat mK;
     Eigen::Matrix3f mK_;
-    static float fx;
-    static float fy;
-    static float cx;
-    static float cy;
-    static float invfx;
-    static float invfy;
+    static float fx = 1.f;
+    static float fy = 1.f;
+    static float cx = 0.f;
+    static float cy = 0.f;
+    static float invfx = 1.f;
+    static float invfy = 1.f;
     cv::Mat mDistCoef;
 
     // Stereo baseline multiplied by fx.
-    float mbf;
+    float mbf = 1.f;
 
     // Stereo baseline in meters.
-    float mb;
+    float mb = 1.f;
 
     // Threshold close/far points. Close points are inserted from 1 view.
     // Far points are inserted as in the monocular case from 2 views.
-    float mThDepth;
+    float mThDepth = 1.f;
 
     // Number of KeyPoints.
-    int N;
+    int N = 0;
 
     // Vector of keypoints (original for visualization) and undistorted (actually used by the system).
     // In the stereo case, mvKeysUn is redundant as images must be rectified.
@@ -263,7 +262,7 @@ public:
     // MapPoints associated to keypoints, NULL pointer if no association.
     // Flag to identify outlier associations.
     std::vector<bool> mvbOutlier;
-    int mnCloseMPs;
+    int mnCloseMPs = 0;
 
     // Keypoints are assigned to cells in a grid to reduce matching complexity when projecting MapPoints.
     static float mfGridElementWidthInv;
@@ -279,24 +278,24 @@ public:
     IMU::Calib mImuCalib;
 
     // Imu preintegration from last keyframe
-    IMU::Preintegrated* mpImuPreintegrated;
-    KeyFrame* mpLastKeyFrame;
+    IMU::Preintegrated* mpImuPreintegrated = nullptr;
+    KeyFrame* mpLastKeyFrame = nullptr;
 
     // Pointer to previous frame
-    Frame* mpPrevFrame;
-    IMU::Preintegrated* mpImuPreintegratedFrame;
+    Frame* mpPrevFrame = nullptr;
+    IMU::Preintegrated* mpImuPreintegratedFrame = nullptr;
 
     // Current and Next Frame id.
     static long unsigned int nNextId;
-    long unsigned int mnId;
+    long unsigned int mnId = 0;
 
     // Reference Keyframe.
-    KeyFrame* mpReferenceKF;
+    KeyFrame* mpReferenceKF = nullptr;
 
     // Scale pyramid info.
-    int mnScaleLevels;
-    float mfScaleFactor;
-    float mfLogScaleFactor;
+    int mnScaleLevels = 0;
+    float mfScaleFactor = 1.f;
+    float mfLogScaleFactor = 1.f;
     vector<float> mvScaleFactors;
     vector<float> mvInvScaleFactors;
     vector<float> mvLevelSigma2;
@@ -315,11 +314,11 @@ public:
 
     string mNameFile;
 
-    int mnDataset;
+    int mnDataset = 0;
 
 #ifdef REGISTER_TIMES
-    double mTimeORB_Ext;
-    double mTimeStereoMatch;
+    double mTimeORB_Ext = 0.0;
+    double mTimeStereoMatch = 0.0;
 #endif
 
 private:
@@ -335,19 +334,18 @@ private:
     // Assign keypoints to the grid for speed up feature matching (called in the constructor).
     void AssignFeaturesToGrid();
 
-    bool mbIsSet;
+    bool mbIsSet = false;
+    bool mbImuPreintegrated = false;
 
-    bool mbImuPreintegrated;
-
-    std::mutex *mpMutexImu;
+    std::mutex *mpMutexImu = nullptr;
 
 public:
-    GeometricCamera* mpCamera, *mpCamera2;
+    GeometricCamera* mpCamera = nullptr, *mpCamera2 = nullptr;
 
     //Number of KeyPoints extracted in the left and right images
-    int Nleft, Nright;
+    int Nleft = 0, Nright = 0;
     //Number of Non Lapping Keypoints
-    int monoLeft, monoRight;
+    int monoLeft = 0, monoRight = 0;
 
     //For stereo matching
     std::vector<int> mvLeftToRightMatch, mvRightToLeftMatch;
