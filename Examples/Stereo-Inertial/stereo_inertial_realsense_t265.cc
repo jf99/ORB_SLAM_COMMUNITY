@@ -290,7 +290,7 @@ int main(int argc, char **argv)
         std::chrono::steady_clock::time_point t_Start_Track = std::chrono::steady_clock::now();
 #endif
         // Pass the image to the SLAM system
-        SLAM.TrackStereo(im_left, im_right, timestamp, vImuMeas);
+        SLAM.TrackStereo(im_left, im_right, cv::Mat(), cv::Mat(), timestamp, vImuMeas);
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point t_End_Track = std::chrono::steady_clock::now();
 
