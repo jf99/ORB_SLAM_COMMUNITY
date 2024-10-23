@@ -273,8 +273,8 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
 
         cv::remap(imLeft, imLeftToFeed, M1l, M2l, cv::INTER_LINEAR);
         cv::remap(imRight, imRightToFeed, M1r, M2r, cv::INTER_LINEAR);
-        cv::remap(maskLeft, maskLeftToFeed, M1l, M2l, cv::INTER_LINEAR);
-        cv::remap(maskRight, maskRightToFeed, M1r, M2r, cv::INTER_LINEAR);
+        cv::remap(maskLeft, maskLeftToFeed, M1l, M2l, cv::INTER_NEAREST);
+        cv::remap(maskRight, maskRightToFeed, M1r, M2r, cv::INTER_NEAREST);
     }
     else if(settings_ && settings_->needToResize()){
         cv::resize(imLeft, imLeftToFeed, settings_->newImSize());
