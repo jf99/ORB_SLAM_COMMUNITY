@@ -1120,7 +1120,13 @@ namespace ORB_SLAM3
 
         Mat maskDist, mask = _mask.empty()? cv::Mat(image.size(), CV_8UC1, cv::Scalar(255)): _mask.getMat();
         assert(mask.type() == CV_8UC1);
+
+        double minVal = 0.0, maxVal = 0.0;
+        cv::minMaxLoc(mask, &minVal, &maxVal);
+        std::cout << "mask:     min " << minVal << ", max " << maxVal << std::endl;
         cv::distanceTransform(mask, maskDist, cv::DIST_C, 3, CV_32F);
+        cv::minMaxLoc(maskDist, &minVal, &maxVal);
+        std::cout << "maskDist: min " << minVal << ", max " << maxVal << std::endl;
 
         // Pre-compute the scale pyramid
         ComputePyramid(image);
