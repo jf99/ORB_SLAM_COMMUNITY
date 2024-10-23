@@ -791,6 +791,7 @@ namespace ORB_SLAM3
         allKeypoints.resize(nlevels);
 
         const float W = 35;
+        size_t totalNumKeypoints = 0, totalNumKeypointsBeforeFiltering = 0;
 
         for (int level = 0; level < nlevels; ++level)
         {
@@ -908,8 +909,12 @@ namespace ORB_SLAM3
                 if(canStay[i])
                     remainingKps.emplace_back(keypoints[i]);
             }
+            totalNumKeypointsBeforeFiltering += keypoints.size();
+            totalNumKeypoints += remainingKps.size();
             keypoints = remainingKps;
         }
+
+        std::cout << totalNumKeypoints << " out of " << totalNumKeypointsBeforeFiltering << " survived" << std::endl;
 
         // compute orientations
         for (int level = 0; level < nlevels; ++level)

@@ -1084,6 +1084,12 @@ void Frame::ComputeStereoMatches()
             mvDepth[vDistIdx[i].second]=-1;
         }
     }
+
+    size_t numMatches = 0;
+    for(const float depth : mvDepth) {
+        numMatches += (depth > 0.f);
+    }
+    std::cout << numMatches << " L/R-matches" << std::endl;
 }
 
 
