@@ -122,6 +122,11 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const cv::Mat& maskL
 #ifdef REGISTER_TIMES
     std::chrono::steady_clock::time_point time_StartExtORB = std::chrono::steady_clock::now();
 #endif
+    std::cout << "imLeft: " << imLeft.size() << std::endl;
+    std::cout << "imRight: " << imRight.size() << std::endl;
+    std::cout << "maskLeft: " << maskLeft.size() << std::endl;
+    std::cout << "maskRight: " << maskRight.size() << std::endl;
+
     thread threadLeft(&Frame::ExtractORB, this, 0, imLeft, maskLeft, 0, 0);
     thread threadRight(&Frame::ExtractORB, this, 1, imRight, maskRight, 0, 0);
     threadLeft.join();
